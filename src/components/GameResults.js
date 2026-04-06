@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/GameResults.css';
 
 function GameResults({ players, gameState, onPlayAgain }) {
-  const [showImpostorWord, setShowImpostorWord] = useState(false);
 
   const impostorPlayer = players[gameState.impostorIndex];
   const votes = gameState.votes;
