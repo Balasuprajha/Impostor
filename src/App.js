@@ -97,9 +97,7 @@ function App() {
         descriptions: data.descriptions,
         gamePhase: 'revealing',
       }));
-      if (gameData.isHost) {
-        setPhase('hostReveal');
-      }
+      setPhase('hostReveal');
     });
 
     newSocket.on('descriptionsRevealed', (data) => {
@@ -178,7 +176,7 @@ function App() {
           wordPair: wordPair,
           totalPlayers: numPlayers,
           playerCount: 1,
-          isImpostor: 0 === 0, // Host is always first, will be assigned randomly
+          isImpostor: true
         }));
         setPhase('waitingRoom');
       });
