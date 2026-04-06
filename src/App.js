@@ -57,12 +57,26 @@ function App() {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
       transports: ['polling'],
+      upgrade: false,
+      rememberUpgrade: false,
+      query: {
+        'EIO': 4,
+        'transport': 'polling'
+      }
     });
 
     newSocket.on('connect', () => {
       console.log('Connected to server');
+    });
+
+    newSocket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+    });
+
+    newSocket.on('disconnect', (reason) => {
+      console.log('Disconnected from server:', reason);
     });
 
     newSocket.on('playerJoined', (data) => {
