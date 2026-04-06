@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/DescriptionInput.css';
 
-function DescriptionInput({ playerName, onSubmit, isLastPlayer }) {
+function DescriptionInput({ playerNumber, totalPlayers, playerName, isImpostor, word, onSubmit }) {
   const [description, setDescription] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
@@ -14,39 +14,60 @@ function DescriptionInput({ playerName, onSubmit, isLastPlayer }) {
     
     onSubmit(description.trim().split(/\s+/)[0]); // Only take the first word
     setSubmitted(true);
-    setDescription('');
   };
 
   if (submitted) {
     return (
       <div className="description-submitted">
-        <p className="submitted-message">✓ Description submitted!</p>
+        <p className="submitted-message">✓ {playerName}'s description submitted!</p>
         <p className="next-message">
-          {isLastPlayer ? 'Ready for voting round...' : 'Waiting for next player...'}
+          Pass the device to the next player...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="description-input">
-      <form onSubmit={handleSubmit}>
-        <div className="input-wrapper">
+    <div className="description-input-page">
+      <div className="progress-bar">
+        <div 
+          className="progress-fill" 
+          style={{ width: `${(playerNumber / totalPlayers) * 100}%` }}
+        ></div>
+      </div>
+      <p className="progress-text">Player {playerNumber} of {totalPlayers}</p>
+
+      <div className="description-container">
+        <h2>{playerName}'s Turn</h2>
+
+        <div className={`word-box ${isImpostor ? 'impostor' : 'team'}`}>
+          <p className="word-label">
+            {isImpostor ? '🎭 Your Clue Word (You are the Impostor!)' : 'Your Team Word'}
+          </p>
+          <p className="word-display">{word}</p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
           <label htmlFor="description">Describe in ONE word:</label>
           <input
             id="description"
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter one word..."
+            placeholder="Type one word..."
             maxLength="50"
             autoFocus
+            className="desc-input"
           />
+          <button type="submit" className="submit-desc-btn">
+            Submit & Continue
+          </button>
+        </form>
+
+        <div className="desc-warning">
+          ⚠️ <strong>Remember:</strong> Only describe the word given to you!
         </div>
-        <button type="submit" className="submit-btn">
-          Submit Description
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

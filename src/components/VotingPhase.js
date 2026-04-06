@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import '../styles/VotingPhase.css';
 
-function VotingPhase({
-  players,
-  currentPlayerIndex,
-  gameState,
+function VotingPhase({ 
+  players, 
+  descriptions, 
+  currentPlayerIndex, 
   onVote,
+  isLastVoter
 }) {
   const [selectedVote, setSelectedVote] = useState(null);
   const [voted, setVoted] = useState(false);
 
   const currentPlayer = players[currentPlayerIndex];
 
-  const handleVote = (votedPlayerName) => {
-    setSelectedVote(votedPlayerName);
+  const handleVote = (votedPlayer) => {
+    setSelectedVote(votedPlayer);
   };
 
   const handleSubmitVote = () => {
@@ -28,54 +29,58 @@ function VotingPhase({
   if (voted) {
     return (
       <div className="vote-submitted">
-        <p className="vote-message">✓ Vote submitted!</p>
+        <p className="vote-message">✓ {currentPlayer}'s vote submitted!</p>
         <p className="next-message">
-          {currentPlayerIndex === players.length - 1
-            ? 'All votes are in. Calculating results...'
-            : 'Waiting for other players to vote...'}
+          {isLastVoter ? 'All votes are in. Calculating results...' : 'Pass the device to the next player...'}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="voting-phase">
-      <div className="voting-container">
-        <h2>Voting Round</h2>
-        <p className="voter-info">
-          <span className="voter-name">{currentPlayer}</span>, who do you think is the Impostor?
-        </p>
+    <div className="voting-container-new">
+      <div className="voting-content">
+        <div className="progress-bar">
+          <div 
+            className="progress-fill" 
+            style={{ width: `${((currentPlayerIndex + 1) / players.length) * 100}%` }}
+          ></div>
+        </div>
+        <p className="progress-text">Player {currentPlayerIndex + 1} of {players.length}</p>
 
-        <div className="game-summary">
-          <h3>Descriptions Given:</h3>
-          <div className="descriptions-review">
-            {Object.entries(gameState.descriptions).map(([playerName, description]) => (
-              <div key={playerName} className="description-review-item">
-                <span className="desc-player">{playerName}:</span>
-                <span className="desc-word">{description}</span>
+        <h2>🗳️ Voting Round</h2>
+        <p className="voter-name">{currentPlayer}, who do you think is the Impostor?</p>
+
+        <div className="descriptions-display">
+          <h3>📝 Everyone's Descriptions:</h3>
+          <div className="all-descs">
+            {players.map((player) => (
+              <div key={player} className="desc-show">
+                <span className="p-name">{player}:</span>
+                <span className="p-desc">{descriptions[player]}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="voting-buttons">
-          <p className="vote-prompt">Click on who you think is the Impostor:</p>
-          <div className="players-to-vote">
-            {players.map((playerName, index) => (
+        <div className="voting-buttons-section">
+          <p className="select-prompt">Click on who you vote for:</p>
+          <div className="vote-options">
+            {players.map((player) => (
               <button
-                key={index}
-                className={`player-vote-btn ${selectedVote === playerName ? 'selected' : ''}`}
-                onClick={() => handleVote(playerName)}
+                key={player}
+                className={`vote-option ${selectedVote === player ? 'selected' : ''}`}
+                onClick={() => handleVote(player)}
               >
-                {playerName}
-                {selectedVote === playerName && <span className="checkmark">✓</span>}
+                {player}
+                {selectedVote === player && <span className="check">✓</span>}
               </button>
             ))}
           </div>
         </div>
 
         <button className="submit-vote-btn" onClick={handleSubmitVote}>
-          Submit Your Vote
+          Submit Vote
         </button>
       </div>
     </div>

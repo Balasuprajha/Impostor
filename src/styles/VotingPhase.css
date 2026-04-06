@@ -1,11 +1,11 @@
-.voting-phase {
+.voting-container-new {
   width: 100%;
   max-width: 900px;
   display: flex;
   justify-content: center;
 }
 
-.voting-container {
+.voting-content {
   background: white;
   border-radius: 15px;
   padding: 40px;
@@ -13,85 +13,79 @@
   width: 100%;
 }
 
-.voting-container h2 {
+.voting-content h2 {
   color: #333;
-  margin-bottom: 20px;
   text-align: center;
+  margin-bottom: 20px;
   font-size: 2em;
 }
 
-.voter-info {
-  text-align: center;
-  font-size: 1.2em;
-  color: #666;
-  margin-bottom: 30px;
-}
-
 .voter-name {
-  font-weight: 700;
-  color: #667eea;
+  text-align: center;
   font-size: 1.3em;
+  color: #667eea;
+  margin-bottom: 30px;
+  font-weight: 700;
 }
 
-.game-summary {
+.descriptions-display {
   background: #f8f9fa;
   padding: 25px;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 30px;
 }
 
-.game-summary h3 {
+.descriptions-display h3 {
   color: #333;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  margin-top: 0;
 }
 
-.descriptions-review {
+.all-descs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  gap: 12px;
 }
 
-.description-review-item {
+.desc-show {
   background: white;
   padding: 15px;
   border-radius: 8px;
   border-left: 4px solid #667eea;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  gap: 15px;
 }
 
-.desc-player {
+.p-name {
   font-weight: 700;
   color: #667eea;
-  font-size: 0.95em;
+  min-width: 120px;
 }
 
-.desc-word {
+.p-desc {
   color: #333;
   font-size: 1.1em;
-  font-weight: 600;
+  flex: 1;
 }
 
-.voting-buttons {
-  margin-bottom: 30px;
+.voting-buttons-section {
+  margin-bottom: 25px;
 }
 
-.vote-prompt {
+.select-prompt {
   text-align: center;
   color: #666;
   margin-bottom: 20px;
   font-weight: 600;
 }
 
-.players-to-vote {
+.vote-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
 
-.player-vote-btn {
+.vote-option {
   padding: 15px;
   background: #f0f0f0;
   color: #333;
@@ -104,19 +98,19 @@
   position: relative;
 }
 
-.player-vote-btn:hover {
+.vote-option:hover {
   background: #e0e0e0;
   transform: translateY(-2px);
 }
 
-.player-vote-btn.selected {
+.vote-option.selected {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-color: #667eea;
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-.checkmark {
+.check {
   display: inline-block;
   margin-left: 8px;
   font-weight: bold;
@@ -149,7 +143,7 @@
 }
 
 .vote-message {
-  font-size: 1.5em;
+  font-size: 1.8em;
   color: #27ae60;
   font-weight: 700;
   margin-bottom: 15px;
@@ -162,28 +156,29 @@
 }
 
 @media (max-width: 600px) {
-  .voting-container {
+  .voting-content {
     padding: 20px;
   }
 
-  .game-summary {
-    padding: 15px;
+  .voting-content h2 {
+    font-size: 1.5em;
   }
 
-  .descriptions-review {
-    grid-template-columns: 1fr;
-  }
-
-  .players-to-vote {
+  .vote-options {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .player-vote-btn {
+  .vote-option {
     padding: 12px;
     font-size: 0.9em;
   }
 
-  .voting-container h2 {
-    font-size: 1.5em;
+  .desc-show {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .p-name {
+    min-width: initial;
   }
 }

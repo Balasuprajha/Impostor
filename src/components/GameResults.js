@@ -1,10 +1,8 @@
 import React from 'react';
 import '../styles/GameResults.css';
 
-function GameResults({ players, gameState, onPlayAgain }) {
-
-  const impostorPlayer = players[gameState.impostorIndex];
-  const votes = gameState.votes;
+function GameResults({ players, impostorIndex, wordPair, descriptions, votes, onPlayAgain }) {
+  const impostorPlayer = players[impostorIndex];
   
   // Count votes for each player
   const voteCount = {};
@@ -40,18 +38,18 @@ function GameResults({ players, gameState, onPlayAgain }) {
 
           <div className="words-reveal">
             <div className="real-word-reveal">
-              <h4>Real Word:</h4>
-              <p className="revealed-word">{gameState.word}</p>
+              <h4>Team's Word:</h4>
+              <p className="revealed-word">{wordPair.word}</p>
             </div>
             <div className="impostor-clue-reveal">
               <h4>Impostor's Clue:</h4>
-              <p className="revealed-word">{gameState.impostorWord}</p>
+              <p className="revealed-word">{wordPair.impostorWord}</p>
             </div>
           </div>
         </div>
 
         <div className="voting-results">
-          <h3>Voting Results:</h3>
+          <h3>🗳️ Voting Results:</h3>
           <div className="vote-tally">
             {players.map((player) => (
               <div key={player} className={`vote-item ${player === impostorPlayer ? 'impostor' : ''}`}>
@@ -64,13 +62,13 @@ function GameResults({ players, gameState, onPlayAgain }) {
         </div>
 
         <div className="descriptions-final">
-          <h3>All Descriptions:</h3>
+          <h3>📝 All Descriptions:</h3>
           <div className="all-descriptions">
-            {Object.entries(gameState.descriptions).map(([playerName, description]) => (
-              <div key={playerName} className={`final-description ${playerName === impostorPlayer ? 'impostor-desc' : ''}`}>
-                <span className="final-player">{playerName}</span>
-                <span className="final-desc">{description}</span>
-                {playerName === impostorPlayer && <span className="impostor-badge">Impostor</span>}
+            {players.map((player) => (
+              <div key={player} className={`final-description ${player === impostorPlayer ? 'impostor-desc' : ''}`}>
+                <span className="final-player">{player}</span>
+                <span className="final-desc">{descriptions[player]}</span>
+                {player === impostorPlayer && <span className="impostor-badge">Impostor</span>}
               </div>
             ))}
           </div>
@@ -79,11 +77,11 @@ function GameResults({ players, gameState, onPlayAgain }) {
         <div className="result-message">
           {wasImpostorFound ? (
             <div className="team-win">
-              <p>Great job team! You found the Impostor!</p>
+              <p>🎊 Excellent teamwork! You found the Impostor!</p>
             </div>
           ) : (
             <div className="impostor-win">
-              <p>The Impostor fooled the team and won!</p>
+              <p>🎭 The Impostor fooled everyone and won!</p>
             </div>
           )}
         </div>

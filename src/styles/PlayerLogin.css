@@ -1,0 +1,134 @@
+.player-login {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+}
+
+.login-container {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  width: 100%;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  text-align: center;
+  color: #999;
+  font-size: 0.9em;
+  margin-bottom: 30px;
+}
+
+.login-container h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 2em;
+}
+
+.instruction {
+  text-align: center;
+  color: #666;
+  font-size: 1.1em;
+  margin-bottom: 30px;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.name-input {
+  padding: 15px;
+  font-size: 1.1em;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.login-btn {
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.info-box {
+  background: #e3f2fd;
+  border: 2px solid #2196f3;
+  border-radius: 8px;
+  padding: 20px;
+  color: #1565c0;
+}
+
+.info-box p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.info-box p:first-child {
+  margin-top: 0;
+}
+
+.warning {
+  font-weight: 600;
+  color: #c62828;
+  background: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  .login-container {
+    padding: 20px;
+  }
+
+  .login-container h2 {
+    font-size: 1.5em;
+  }
+
+  .info-box {
+    padding: 15px;
+    font-size: 0.95em;
+  }
+}
