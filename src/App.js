@@ -58,6 +58,9 @@ function App() {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       reconnectionAttempts: 5,
+      transports: ['websocket', 'polling'],
+      pingInterval: 25000,
+      pingTimeout: 20000,
     });
 
     newSocket.on('connect', () => {
