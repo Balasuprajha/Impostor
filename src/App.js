@@ -53,7 +53,12 @@ function App() {
 
   // Initialize socket connection
   useEffect(() => {
-    const newSocket = io(BACKEND_URL);
+    const newSocket = io(BACKEND_URL, {
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+    });
 
     newSocket.on('connect', () => {
       console.log('Connected to server');
