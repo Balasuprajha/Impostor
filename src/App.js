@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import './App.css';
 import HostSetup from './components/HostSetup';
-import PlayerLogin from './components/PlayerLogin';
+import JoinGame from './components/JoinGame';
+import WaitingRoom from './components/WaitingRoom';
 import DescriptionInput from './components/DescriptionInput';
 import HostReveal from './components/HostReveal';
 import VotingPhase from './components/VotingPhase';
@@ -30,113 +32,214 @@ const WORD_PAIRS = [
   { word: 'candle', impostorWord: 'light' },
 ];
 
+const BACKEND_URL = 'https://impostor-xfcc.vercel.app';
+
 function App() {
-  const [gamePhase, setGamePhase] = useState('hostSetup'); // hostSetup, playerLogin, describing, hostReveal, voting, results
+  const [socket, setSocket] = useState(null);
+  const [phase, setPhase] = useState('menu'); // menu, hostSetup, joinGame, waitingRoom, describing, hostReveal, voting, results
   const [gameData, setGameData] = useState({
-    players: [],
-    impostorIndex: null,
+    gameId: null,
+    isHost: false,
+    isImpostor: false,
+    playerName: null,
     wordPair: null,
+    players: [],
     descriptions: {},
     votes: {},
+    gamePhase: null,
+    playerCount: 0,
+    totalPlayers: 0,
   });
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  // Load from localStorage on mount
+  // Initialize socket connection
   useEffect(() => {
-    const savedGame = localStorage.getItem('wordImpostorGame');
-    if (savedGame) {
-      const parsed = JSON.parse(savedGame);
-      setGameData(parsed.gameData);
-      setCurrentPlayerIndex(parsed.currentPlayerIndex);
-      setGamePhase(parsed.gamePhase);
-    }
+    const newSocket = io(BACKEND_URL);
+
+    newSocket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+    newSocket.on('playerJoined', (data) => {
+      console.log('Player joined:', data);
+      setGameData(prev => ({
+        ...prev,
+        playerCount: data.playerCount,
+        totalPlayers: data.totalPlayers,
+      }));
+    });
+
+    newSocket.on('gameStarted', (data) => {
+      console.log('Game started:', data);
+      setGameData(prev => ({
+        ...prev,
+        wordPair: data.wordPair,
+        players: data.players,
+        gamePhase: 'filling',
+      }));
+      setPhase('describing');
+    });
+
+    newSocket.on('descriptionReceived', (data) => {
+      console.log('Description received:', data);
+      setGameData(prev => ({
+        ...prev,
+        descriptions: {
+          ...prev.descriptions,
+          [data.playerName]: data.description,
+        },
+      }));
+    });
+
+    newSocket.on('allDescriptionsSubmitted', (data) => {
+      console.log('All descriptions submitted');
+      setGameData(prev => ({
+        ...prev,
+        descriptions: data.descriptions,
+        gamePhase: 'revealing',
+      }));
+      if (gameData.isHost) {
+        setPhase('hostReveal');
+      }
+    });
+
+    newSocket.on('descriptionsRevealed', (data) => {
+      console.log('Descriptions revealed');
+      setGameData(prev => ({
+        ...prev,
+        descriptions: data.descriptions,
+        gamePhase: 'voting',
+      }));
+      setPhase('voting');
+    });
+
+    newSocket.on('voteReceived', (data) => {
+      console.log('Vote received:', data);
+    });
+
+    newSocket.on('gameResults', (data) => {
+      console.log('Game results:', data);
+      setGameData(prev => ({
+        ...prev,
+        descriptions: data.descriptions,
+        votes: data.votes,
+        gamePhase: 'results',
+      }));
+      setPhase('results');
+    });
+
+    newSocket.on('gameRestarted', () => {
+      setPhase('waitingRoom');
+      setGameData(prev => ({
+        ...prev,
+        descriptions: {},
+        votes: {},
+      }));
+    });
+
+    newSocket.on('hostDisconnected', () => {
+      alert('Host disconnected. Game ended.');
+      setPhase('menu');
+      setGameData({
+        gameId: null,
+        isHost: false,
+        isImpostor: false,
+        playerName: null,
+        wordPair: null,
+        players: [],
+        descriptions: {},
+        votes: {},
+        gamePhase: null,
+        playerCount: 0,
+        totalPlayers: 0,
+      });
+    });
+
+    newSocket.on('playerLeft', (data) => {
+      setGameData(prev => ({
+        ...prev,
+        playerCount: data.playerCount,
+        totalPlayers: data.totalPlayers,
+      }));
+    });
+
+    setSocket(newSocket);
+
+    return () => newSocket.close();
   }, []);
 
-  // Save to localStorage whenever game state changes
-  useEffect(() => {
-    localStorage.setItem('wordImpostorGame', JSON.stringify({
-      gamePhase,
-      gameData,
-      currentPlayerIndex,
-    }));
-  }, [gamePhase, gameData, currentPlayerIndex]);
-
-  const handleHostStartGame = (numPlayers, selectedWordPair) => {
-    const impostorIdx = Math.floor(Math.random() * numPlayers);
-    const players = Array.from({ length: numPlayers }, (_, i) => `Player ${i + 1}`);
-    
-    setGameData({
-      players,
-      impostorIndex: impostorIdx,
-      wordPair: selectedWordPair,
-      descriptions: {},
-      votes: {},
-    });
-    setCurrentPlayerIndex(0);
-    setGamePhase('playerLogin');
-  };
-
-  const handlePlayerLogin = (playerName) => {
-    const updatedPlayers = [...gameData.players];
-    updatedPlayers[currentPlayerIndex] = playerName;
-    
-    setGameData(prev => ({ ...prev, players: updatedPlayers }));
-    setGamePhase('describing');
-  };
-
-  const handleDescriptionSubmit = (description) => {
-    const playerName = gameData.players[currentPlayerIndex];
-    
-    setGameData(prev => ({
-      ...prev,
-      descriptions: {
-        ...prev.descriptions,
-        [playerName]: description,
-      },
-    }));
-
-    if (currentPlayerIndex < gameData.players.length - 1) {
-      setCurrentPlayerIndex(currentPlayerIndex + 1);
-      setGamePhase('playerLogin');
-    } else {
-      setGamePhase('hostReveal');
+  const handleCreateGame = (numPlayers, wordPair, playerName) => {
+    if (socket) {
+      socket.emit('createGame', { numPlayers, wordPair, playerName }, (data) => {
+        setGameData(prev => ({
+          ...prev,
+          gameId: data.gameId,
+          isHost: true,
+          playerName: playerName,
+          wordPair: wordPair,
+          totalPlayers: numPlayers,
+          playerCount: 1,
+          isImpostor: 0 === 0, // Host is always first, will be assigned randomly
+        }));
+        setPhase('waitingRoom');
+      });
     }
   };
 
-  const handleRevealAll = () => {
-    setCurrentPlayerIndex(0);
-    setGamePhase('voting');
+  const handleJoinGame = (gameId, playerName) => {
+    if (socket) {
+      socket.emit('joinGame', { gameId, playerName }, (result) => {
+        if (result.success) {
+          setGameData(prev => ({
+            ...prev,
+            gameId,
+            playerName,
+            isHost: false,
+          }));
+          socket.emit('getGameState', (state) => {
+            setGameData(prev => ({
+              ...prev,
+              ...state,
+              playerName,
+              isHost: false,
+            }));
+            setPhase('waitingRoom');
+          });
+        } else {
+          alert('Error joining game: ' + result.error);
+        }
+      });
+    }
   };
 
-  const handleVote = (votedPlayer) => {
-    const voter = gameData.players[currentPlayerIndex];
-    
-    setGameData(prev => ({
-      ...prev,
-      votes: {
-        ...prev.votes,
-        [voter]: votedPlayer,
-      },
-    }));
+  const handleStartGame = () => {
+    if (socket && gameData.isHost) {
+      socket.emit('startGame');
+    }
+  };
 
-    if (currentPlayerIndex < gameData.players.length - 1) {
-      setCurrentPlayerIndex(currentPlayerIndex + 1);
-    } else {
-      setGamePhase('results');
+  const handleSubmitDescription = (description) => {
+    if (socket) {
+      socket.emit('submitDescription', description);
+      setPhase('waitingRoom'); // Show waiting message
+    }
+  };
+
+  const handleRevealDescriptions = () => {
+    if (socket && gameData.isHost) {
+      socket.emit('revealDescriptions');
+    }
+  };
+
+  const handleVote = (votedPlayerName) => {
+    if (socket) {
+      socket.emit('submitVote', votedPlayerName);
     }
   };
 
   const handlePlayAgain = () => {
-    localStorage.removeItem('wordImpostorGame');
-    setGamePhase('hostSetup');
-    setGameData({
-      players: [],
-      impostorIndex: null,
-      wordPair: null,
-      descriptions: {},
-      votes: {},
-    });
-    setCurrentPlayerIndex(0);
+    if (socket && gameData.isHost) {
+      socket.emit('restartGame');
+    }
   };
 
   return (
@@ -145,59 +248,108 @@ function App() {
         <h1>🎭 Word Impostor Game</h1>
       </header>
       <main className="App-main">
-        {gamePhase === 'hostSetup' && (
-          <HostSetup 
-            wordPairs={WORD_PAIRS}
-            onStartGame={handleHostStartGame}
+        {phase === 'menu' && (
+          <Menu onCreateGame={handleCreateGame} onJoinGame={handleJoinGame} />
+        )}
+        {phase === 'hostSetup' && (
+          <HostSetup wordPairs={WORD_PAIRS} onStartGame={handleCreateGame} />
+        )}
+        {phase === 'waitingRoom' && (
+          <WaitingRoom
+            gameData={gameData}
+            onStartGame={handleStartGame}
           />
         )}
-        {gamePhase === 'playerLogin' && (
-          <PlayerLogin
-            playerNumber={currentPlayerIndex + 1}
-            totalPlayers={gameData.players.length}
-            currentPlayerName={gameData.players[currentPlayerIndex]}
-            onLogin={handlePlayerLogin}
-          />
-        )}
-        {gamePhase === 'describing' && (
+        {phase === 'describing' && (
           <DescriptionInput
-            playerNumber={currentPlayerIndex + 1}
-            totalPlayers={gameData.players.length}
-            playerName={gameData.players[currentPlayerIndex]}
-            isImpostor={currentPlayerIndex === gameData.impostorIndex}
-            word={currentPlayerIndex === gameData.impostorIndex ? gameData.wordPair.impostorWord : gameData.wordPair.word}
-            onSubmit={handleDescriptionSubmit}
+            playerName={gameData.playerName}
+            isImpostor={gameData.isImpostor}
+            word={gameData.isImpostor ? gameData.wordPair.impostorWord : gameData.wordPair.word}
+            onSubmit={handleSubmitDescription}
           />
         )}
-        {gamePhase === 'hostReveal' && (
+        {phase === 'hostReveal' && (
           <HostReveal
             wordPair={gameData.wordPair}
-            impostorIndex={gameData.impostorIndex}
             players={gameData.players}
             descriptions={gameData.descriptions}
-            onReveal={handleRevealAll}
+            onReveal={handleRevealDescriptions}
           />
         )}
-        {gamePhase === 'voting' && (
+        {phase === 'voting' && (
           <VotingPhase
             players={gameData.players}
             descriptions={gameData.descriptions}
-            currentPlayerIndex={currentPlayerIndex}
+            playerName={gameData.playerName}
             onVote={handleVote}
-            isLastVoter={currentPlayerIndex === gameData.players.length - 1}
           />
         )}
-        {gamePhase === 'results' && (
+        {phase === 'results' && (
           <GameResults
             players={gameData.players}
-            impostorIndex={gameData.impostorIndex}
             wordPair={gameData.wordPair}
             descriptions={gameData.descriptions}
             votes={gameData.votes}
+            isHost={gameData.isHost}
             onPlayAgain={handlePlayAgain}
           />
         )}
       </main>
+    </div>
+  );
+}
+
+function Menu({ onCreateGame, onJoinGame }) {
+  const [showCreate, setShowCreate] = useState(false);
+  const [showJoin, setShowJoin] = useState(false);
+
+  return (
+    <div className="menu-container">
+      <div className="menu-box">
+        <h2>Welcome to Word Impostor Game!</h2>
+        <p className="menu-subtitle">Play with your colleagues online</p>
+        
+        {!showCreate && !showJoin ? (
+          <div className="menu-buttons">
+            <button className="menu-btn create-btn" onClick={() => setShowCreate(true)}>
+              ➕ Create Game
+            </button>
+            <button className="menu-btn join-btn" onClick={() => setShowJoin(true)}>
+              🚪 Join Game
+            </button>
+          </div>
+        ) : showCreate ? (
+          <HostSetup 
+            wordPairs={[
+              { word: 'toothbrush', impostorWord: 'cleaning' },
+              { word: 'smartphone', impostorWord: 'communication' },
+              { word: 'bicycle', impostorWord: 'transportation' },
+              { word: 'pillow', impostorWord: 'comfort' },
+              { word: 'coffee', impostorWord: 'caffeine' },
+              { word: 'book', impostorWord: 'knowledge' },
+              { word: 'piano', impostorWord: 'music' },
+              { word: 'camera', impostorWord: 'photography' },
+              { word: 'telescope', impostorWord: 'space' },
+              { word: 'refrigerator', impostorWord: 'preservation' },
+              { word: 'guitar', impostorWord: 'melody' },
+              { word: 'lighthouse', impostorWord: 'navigation' },
+              { word: 'volcano', impostorWord: 'eruption' },
+              { word: 'dinosaur', impostorWord: 'extinction' },
+              { word: 'compass', impostorWord: 'direction' },
+              { word: 'mirror', impostorWord: 'reflection' },
+              { word: 'hourglass', impostorWord: 'time' },
+              { word: 'butterfly', impostorWord: 'metamorphosis' },
+              { word: 'castle', impostorWord: 'royalty' },
+              { word: 'candle', impostorWord: 'light' },
+            ]}
+            onStartGame={(numPlayers, wordPair, playerName) => {
+              onCreateGame(numPlayers, wordPair, playerName);
+            }}
+          />
+        ) : (
+          <JoinGame onJoinGame={onJoinGame} />
+        )}
+      </div>
     </div>
   );
 }

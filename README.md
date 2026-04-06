@@ -1,46 +1,72 @@
-# 🎭 Word Impostor Game
+# 🎭 Word Impostor Game - Multiplayer
 
-A fun multiplayer word game where players try to identify the impostor!
+A fun **real-time multiplayer word game** where players join from different devices, describe a secret word, and vote to identify the Impostor!
 
 ## Game Rules
 
-1. **Setup**: 11 players get the SAME word, 1 player (the Impostor) gets a RELATED word
-2. **Description Round**: Each player describes their word in just ONE word
-3. **Discussion**: Players discuss and share their thoughts (optional)
-4. **Voting Round**: Each player votes on who they think is the Impostor
-5. **Results**: 
-   - If the team votes for the Impostor → **Team Wins!** 🎉
-   - If the Impostor isn't found → **Impostor Wins!** 😈
+1. **Setup**: Host creates a game and shares Game ID
+2. **Joining**: Up to 12 players join using the Game ID
+3. **Word Distribution**: 
+   - 11 players get the REAL word
+   - 1 player (Impostor) gets a RELATED word
+4. **Description Round**: Each player describes their word in ONE word on their device
+5. **Reveal**: Host reveals all descriptions
+6. **Voting Round**: Everyone votes on who they think is the Impostor
+7. **Results**: 
+   - If team votes for Impostor → **Team Wins!** 🎉
+   - If Impostor isn't found → **Impostor Wins!** 😈
 
-## How to Play
+## ✨ Features
+
+✅ Multi-device gameplay (players on different phones/laptops)  
+✅ Real-time synchronization with Socket.io  
+✅ Host control panel  
+✅ Secret word display (private per device)  
+✅ Easy game sharing via Game ID  
+✅ Real-time vote counting  
+✅ Support for 2-12 players  
+✅ Beautiful responsive UI  
+
+## 🚀 Quick Start
 
 ### Installation
 
-1. Navigate to the project directory:
-```bash
-cd GameCode
-```
-
-2. Install dependencies:
+**Frontend:**
 ```bash
 npm install
 ```
 
-3. Start the development server:
+**Backend:**
+```bash
+cd backend
+npm install
+```
+
+### Running Locally
+
+**Terminal 1: Start Backend**
+```bash
+cd backend
+npm start
+```
+
+**Terminal 2: Start Frontend**
 ```bash
 npm start
 ```
 
-4. Open your browser to `http://localhost:3000`
+Open `http://localhost:3000` in your browser
 
-### Game Flow
+### How to Play
 
-1. **Enter Player Names**: Type in up to 12 player names
-2. **Start Game**: Click "Start Game" button
-3. **Word Selection**: The first player will see both the real word and the impostor's clue - no need to share these visually
-4. **Description Round**: Each player sees ONLY their assigned word (real or clue) and submits a one-word description
-5. **Voting Round**: All players vote on who they think is the Impostor
-6. **Results**: See who was the Impostor and who won!
+1. Click "Create Game" (host) or "Join Game" (players)
+2. Host shares the Game ID
+3. Players join and game starts
+4. Each player gets a secret word
+5. Describe in ONE word
+6. Host reveals all descriptions
+7. Everyone votes
+8. See results!
 
 ## Features
 
