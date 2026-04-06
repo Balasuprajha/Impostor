@@ -1,0 +1,189 @@
+.voting-phase {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: center;
+}
+
+.voting-container {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  width: 100%;
+}
+
+.voting-container h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 2em;
+}
+
+.voter-info {
+  text-align: center;
+  font-size: 1.2em;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.voter-name {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1.3em;
+}
+
+.game-summary {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.game-summary h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.descriptions-review {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.description-review-item {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.desc-player {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 0.95em;
+}
+
+.desc-word {
+  color: #333;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.voting-buttons {
+  margin-bottom: 30px;
+}
+
+.vote-prompt {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.players-to-vote {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.player-vote-btn {
+  padding: 15px;
+  background: #f0f0f0;
+  color: #333;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.player-vote-btn:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.player-vote-btn.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.checkmark {
+  display: inline-block;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+.submit-vote-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.submit-vote-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.vote-submitted {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.vote-message {
+  font-size: 1.5em;
+  color: #27ae60;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.next-message {
+  font-size: 1.1em;
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .voting-container {
+    padding: 20px;
+  }
+
+  .game-summary {
+    padding: 15px;
+  }
+
+  .descriptions-review {
+    grid-template-columns: 1fr;
+  }
+
+  .players-to-vote {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .player-vote-btn {
+    padding: 12px;
+    font-size: 0.9em;
+  }
+
+  .voting-container h2 {
+    font-size: 1.5em;
+  }
+}

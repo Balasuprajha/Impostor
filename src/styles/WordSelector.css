@@ -1,0 +1,114 @@
+.word-selector {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.word-selector-container {
+  text-align: center;
+}
+
+.word-selector-container h3 {
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 1.5em;
+}
+
+.word-pair-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.real-word-preview,
+.impostor-word-preview {
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.preview-label {
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 1em;
+}
+
+.preset-text {
+  font-size: 2em;
+  font-weight: 700;
+  color: #333;
+  margin: 20px 0;
+}
+
+.selector-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.change-word-btn,
+.confirm-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.change-word-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.change-word-btn:hover {
+  background: #7f8c8d;
+  transform: translateY(-2px);
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 50px;
+}
+
+.confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+@media (max-width: 600px) {
+  .word-selector {
+    padding: 20px;
+  }
+
+  .word-pair-display {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .selector-buttons {
+    flex-direction: column;
+  }
+
+  .change-word-btn,
+  .confirm-btn {
+    width: 100%;
+  }
+
+  .preset-text {
+    font-size: 1.5em;
+  }
+}
